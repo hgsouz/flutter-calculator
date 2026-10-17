@@ -23,11 +23,46 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   String _num1 = '';
   String _num2 = '';
-  String _operacao = '+';
+  String _operacao = '';
+  String _resultado = '';
 
   void _selecionarOperacao(String op) {
     setState(() {
       _operacao = op;
+    });
+  }
+
+  // Escolhe a conta conforme a operação
+  double calcular(double a, double b, String op) {
+    if (op == '+') {
+      return a + b;
+    } else if (op == '-') {
+      return a - b;
+    } else if (op == '×') {
+      return a * b;
+    } else {
+      return a / b;
+    }
+  }
+
+  void _executarCalculo() {
+    // Troca vírgula por ponto e converte texto em número
+    double n1 = double.tryParse(_num1.replaceAll(',', '.')) ?? 0.0;
+    double n2 = double.tryParse(_num2.replaceAll(',', '.')) ?? 0.0;
+
+    // Náo permite divisão por 0
+    if (_operacao == '÷' && n2 == 0) {
+      setState(() {
+        _resultado = 'Não é possível dividir por zero';
+      });
+      return;
+    }
+
+    // Realiza o calculo com base nos dados obtidos
+    double resultado = calcular(n1, n2, _operacao);
+
+    setState(() {
+      _resultado = '$n1 $_operacao $n2 = $resultado';
     });
   }
 
@@ -77,7 +112,11 @@ class _MyHomePageState extends State<MyHomePage> {
               ],
             ),
             Text('Operação selecionada: $_operacao'),
-            Text('Você digitou: $_num1 $_operacao $_num2'),
+            ElevatedButton(
+              onPressed: _executarCalculo,
+              child: const Text('Calcular'),
+            ),
+            Text(_resultado),
           ],
         ),
       ),
